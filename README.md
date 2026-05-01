@@ -1,2 +1,2 @@
-# Catatan-Hobi-Harian
+# Jadwal-HobiTime
 Jurnal sederhana untuk hobi
