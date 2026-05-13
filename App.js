@@ -1,22 +1,72 @@
-import React from 'react';
-
+import React, { useState } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   Text,
   View,
   StatusBar,
+  TouchableOpacity,
+  FlatList,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { Bell } from 'lucide-react-native';
-
 import { colors, fontType } from './assets/theme';
-
 import { useFonts } from 'expo-font';
-
 import ListHobby from './src/components/ListHobby';
+import { CategoryList } from './src/data/categories';
+
+const ItemCategory = ({ item, onPress, color }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={category.item}>
+        <Text
+          style={{
+            ...category.title,
+            color,
+          }}
+        >
+          {item.categoryName}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const FlatListCategory = () => {
+
+  const [selected, setSelected] = useState(1);
+
+  const renderItem = ({ item }) => {
+
+    const color =
+      item.id === selected
+        ? colors.primary()
+        : colors.grey();
+
+    return (
+      <ItemCategory
+        item={item}
+        color={color}
+        onPress={() => setSelected(item.id)}
+      />
+    );
+  };
+
+  return (
+    <FlatList
+      data={CategoryList}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderItem}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      ItemSeparatorComponent={() => (
+        <View style={{ width: 10 }} />
+      )}
+      contentContainerStyle={{
+        paddingHorizontal: 24,
+      }}
+    />
+  );
+};
 
 export default function App() {
 
@@ -34,7 +84,7 @@ export default function App() {
         backgroundColor={colors.white()}
       />
 
-      {/* Header aplikasi */}
+      {/* Header */}
       <View style={styles.header}>
 
         <Text style={styles.title}>
@@ -48,65 +98,12 @@ export default function App() {
 
       </View>
 
-      {/* Category hobby */}
+      {/* Category */}
       <View style={styles.listCategory}>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
-
-          <View style={{ ...category.item, marginLeft: 24 }}>
-            <Text
-              style={{
-                ...category.title,
-                color: colors.primary(),
-              }}
-            >
-              Semua
-            </Text>
-          </View>
-
-          <View style={category.item}>
-            <Text style={category.title}>
-              Olahraga
-            </Text>
-          </View>
-
-          <View style={category.item}>
-            <Text style={category.title}>
-              Gaming
-            </Text>
-          </View>
-
-          <View style={category.item}>
-            <Text style={category.title}>
-              Musik
-            </Text>
-          </View>
-
-          <View style={category.item}>
-            <Text style={category.title}>
-              Travel
-            </Text>
-          </View>
-
-          <View
-            style={{
-              ...category.item,
-              marginRight: 24,
-            }}
-          >
-            <Text style={category.title}>
-              Membaca
-            </Text>
-          </View>
-
-        </ScrollView>
-
+        <FlatListCategory />
       </View>
 
-      {/* List hobby */}
+      {/* List Hobby */}
       <ListHobby />
 
     </SafeAreaView>
@@ -122,8 +119,8 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: 24,
-    flexDirection: 'row',
     justifyContent: 'space-between',
+    flexDirection: 'row',
     alignItems: 'center',
     height: 60,
     paddingTop: 10,
@@ -148,7 +145,6 @@ const category = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     backgroundColor: colors.grey(0.1),
-    marginHorizontal: 5,
   },
 
   title: {

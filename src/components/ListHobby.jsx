@@ -1,189 +1,211 @@
-import React from 'react';
+import React, { useState } from 'react';
+
 import {
   ScrollView,
   View,
   StyleSheet,
   Text,
-  ImageBackground,
-  Image,
+  TouchableOpacity,
 } from 'react-native';
-import { colors } from '../../assets/theme';
+
+import { Image } from 'expo-image';
+
 import {
-  Clock3,
   Bookmark,
+  Clock3,
 } from 'lucide-react-native';
 
+import { colors } from '../../assets/theme';
+
+import { HobbyList } from '../data/hobbies';
+
+const ItemHorizontal = ({
+  item,
+  isBookmarked,
+  onPress,
+}) => {
+
+  return (
+    <View style={styles.horizontalCard}>
+
+      <Image
+        style={styles.horizontalImage}
+        source={{ uri: item.image }}
+        contentFit="cover"
+        transition={300}
+      />
+
+      <View style={styles.overlay}>
+
+        <View style={styles.horizontalContent}>
+          <Text style={styles.horizontalTitle}>
+            {item.title}
+          </Text>
+
+          <Text style={styles.horizontalText}>
+            {item.createdAt}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.bookmark}
+          onPress={onPress}
+        >
+          <Bookmark
+            color={colors.white()}
+            fill={
+              isBookmarked
+                ? colors.white()
+                : 'transparent'
+            }
+            size={18}
+          />
+        </TouchableOpacity>
+
+      </View>
+    </View>
+  );
+};
+
+const ItemSmall = ({ item }) => {
+
+  return (
+    <View style={styles.verticalCard}>
+
+      <Image
+        style={styles.verticalImage}
+        source={{ uri: item.image }}
+        contentFit="cover"
+      />
+
+      <View style={styles.verticalContent}>
+
+        <Text style={styles.category}>
+          {item.category}
+        </Text>
+
+        <Text style={styles.verticalTitle}>
+          {item.title}
+        </Text>
+
+        <View style={styles.info}>
+
+          <Clock3
+            size={12}
+            color={colors.grey()}
+          />
+
+          <Text style={styles.infoText}>
+            {item.duration}
+          </Text>
+
+        </View>
+
+      </View>
+
+    </View>
+  );
+};
+
 export default function ListHobby() {
+
+  const [bookmark, setBookmark] = useState([]);
+
+  const horizontalData = HobbyList.slice(0, 2);
+
+  const verticalData = HobbyList.slice(2);
+
+  const toggleBookmark = (itemId) => {
+
+    if (bookmark.includes(itemId)) {
+
+      setBookmark(
+        bookmark.filter((id) => id !== itemId)
+      );
+
+    } else {
+
+      setBookmark([...bookmark, itemId]);
+
+    }
+  };
+
   return (
     <ScrollView>
 
-      {/* Hobby Horizontal */}
-      <View style={styles.horizontalContainer}>
+      {/* Horizontal Hobby */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          gap: 15,
+          paddingHorizontal: 24,
+        }}
+      >
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 15 }}
-        >
+        {horizontalData.map((item) => {
 
-          {/* Card 1 */}
-          <View style={{ ...styles.horizontalCard, marginLeft: 24 }}>
-            <ImageBackground
-              style={styles.horizontalImage}
-              imageStyle={{ borderRadius: 18 }}
-              source={{
-                uri: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=1000&auto=format&fit=crop',
-              }}
-            >
-              <View style={styles.overlay}>
-                <View>
-                  <Text style={styles.horizontalTitle}>
-                    Belajar Gitar
-                  </Text>
+          const isBookmarked =
+            bookmark.includes(item.id);
 
-                  <Text style={styles.horizontalText}>
-                    Target hari ini
-                  </Text>
-                </View>
+          return (
+            <ItemHorizontal
+              key={item.id}
+              item={item}
+              isBookmarked={isBookmarked}
+              onPress={() =>
+                toggleBookmark(item.id)
+              }
+            />
+          );
+        })}
 
-                <View style={styles.bookmark}>
-                  <Bookmark
-                    color={colors.white()}
-                    size={18}
-                  />
-                </View>
-              </View>
-            </ImageBackground>
-          </View>
-
-          {/* Card 2 */}
-          <View style={styles.horizontalCard}>
-            <ImageBackground
-              style={styles.horizontalImage}
-              imageStyle={{ borderRadius: 18 }}
-              source={{
-                uri: 'https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1000&auto=format&fit=crop',
-              }}
-            >
-              <View style={styles.overlay}>
-                <View>
-                  <Text style={styles.horizontalTitle}>
-                    Jogging Pagi
-                  </Text>
-
-                  <Text style={styles.horizontalText}>
-                    5 KM setiap pagi
-                  </Text>
-                </View>
-
-                <View style={styles.bookmark}>
-                  <Bookmark
-                    color={colors.white()}
-                    size={18}
-                  />
-                </View>
-              </View>
-            </ImageBackground>
-          </View>
-        </ScrollView>
-      </View>
+      </ScrollView>
 
       {/* Vertical Hobby */}
       <View style={styles.verticalContainer}>
 
-        {/* Item 1 */}
-        <View style={styles.verticalCard}>
-          <Image
-            style={styles.verticalImage}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1000&auto=format&fit=crop',
-            }}
+        {verticalData.map((item) => (
+          <ItemSmall
+            key={item.id}
+            item={item}
           />
-
-          <View style={styles.verticalContent}>
-
-            <Text style={styles.category}>
-              Gaming
-            </Text>
-
-            <Text style={styles.verticalTitle}>
-              Push Rank Mobile Game
-            </Text>
-
-            <View style={styles.info}>
-              <Clock3
-                size={12}
-                color={colors.grey()}
-              />
-
-              <Text style={styles.infoText}>
-                2 Jam / Hari
-              </Text>
-            </View>
-
-          </View>
-        </View>
-
-        {/* Item 2 */}
-        <View style={styles.verticalCard}>
-          <Image
-            style={styles.verticalImage}
-            source={{
-              uri: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1000&auto=format&fit=crop',
-            }}
-          />
-
-          <View style={styles.verticalContent}>
-
-            <Text style={styles.category}>
-              Membaca
-            </Text>
-
-            <Text style={styles.verticalTitle}>
-              Membaca Novel
-            </Text>
-
-            <View style={styles.info}>
-              <Clock3
-                size={12}
-                color={colors.grey()}
-              />
-
-              <Text style={styles.infoText}>
-                30 Menit
-              </Text>
-            </View>
-
-          </View>
-        </View>
+        ))}
 
       </View>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
 
-  horizontalContainer: {
-    marginTop: 10,
-  },
-
   horizontalCard: {
     width: 280,
+    position: 'relative',
   },
 
   horizontalImage: {
     width: '100%',
     height: 200,
-    justifyContent: 'flex-end',
+    borderRadius: 18,
   },
 
   overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
     backgroundColor: 'rgba(0,0,0,0.25)',
-    borderRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+  },
+
+  horizontalContent: {
+    width: '70%',
   },
 
   horizontalTitle: {
@@ -194,23 +216,22 @@ const styles = StyleSheet.create({
 
   horizontalText: {
     color: colors.white(),
-    marginTop: 4,
+    marginTop: 5,
   },
 
   bookmark: {
-    backgroundColor: colors.white(0.3),
     width: 35,
     height: 35,
     borderRadius: 10,
+    backgroundColor: colors.white(0.3),
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   verticalContainer: {
     paddingHorizontal: 24,
-    marginTop: 20,
+    paddingVertical: 20,
     gap: 15,
-    paddingBottom: 30,
   },
 
   verticalCard: {
@@ -253,4 +274,5 @@ const styles = StyleSheet.create({
     color: colors.grey(),
     fontSize: 12,
   },
+
 });
