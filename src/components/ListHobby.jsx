@@ -19,14 +19,34 @@ import { colors } from '../../assets/theme';
 
 import { HobbyList } from '../data/hobbies';
 
+import {
+  useNavigation,
+} from '@react-navigation/native';
+
 const ItemHorizontal = ({
   item,
   isBookmarked,
   onPress,
 }) => {
 
+  const navigation =
+    useNavigation();
+
   return (
-    <View style={styles.horizontalCard}>
+
+    <TouchableOpacity
+
+      style={styles.horizontalCard}
+
+      onPress={() =>
+        navigation.navigate(
+          'HobbyDetail',
+          {
+            hobbyId: item.id,
+          }
+        )
+      }
+    >
 
       <Image
         style={styles.horizontalImage}
@@ -38,6 +58,7 @@ const ItemHorizontal = ({
       <View style={styles.overlay}>
 
         <View style={styles.horizontalContent}>
+
           <Text style={styles.horizontalTitle}>
             {item.title}
           </Text>
@@ -45,12 +66,14 @@ const ItemHorizontal = ({
           <Text style={styles.horizontalText}>
             {item.createdAt}
           </Text>
+
         </View>
 
         <TouchableOpacity
           style={styles.bookmark}
           onPress={onPress}
         >
+
           <Bookmark
             color={colors.white()}
             fill={
@@ -60,17 +83,35 @@ const ItemHorizontal = ({
             }
             size={18}
           />
+
         </TouchableOpacity>
 
       </View>
-    </View>
+
+    </TouchableOpacity>
   );
 };
 
 const ItemSmall = ({ item }) => {
 
+  const navigation =
+    useNavigation();
+
   return (
-    <View style={styles.verticalCard}>
+
+    <TouchableOpacity
+
+      style={styles.verticalCard}
+
+      onPress={() =>
+        navigation.navigate(
+          'HobbyDetail',
+          {
+            hobbyId: item.id,
+          }
+        )
+      }
+    >
 
       <Image
         style={styles.verticalImage}
@@ -103,29 +144,37 @@ const ItemSmall = ({ item }) => {
 
       </View>
 
-    </View>
+    </TouchableOpacity>
   );
 };
 
 export default function ListHobby() {
 
-  const [bookmark, setBookmark] = useState([]);
+  const [bookmark, setBookmark] =
+    useState([]);
 
-  const horizontalData = HobbyList.slice(0, 2);
+  const horizontalData =
+    HobbyList.slice(0, 2);
 
-  const verticalData = HobbyList.slice(2);
+  const verticalData =
+    HobbyList.slice(2);
 
   const toggleBookmark = (itemId) => {
 
     if (bookmark.includes(itemId)) {
 
       setBookmark(
-        bookmark.filter((id) => id !== itemId)
+        bookmark.filter(
+          (id) => id !== itemId
+        )
       );
 
     } else {
 
-      setBookmark([...bookmark, itemId]);
+      setBookmark([
+        ...bookmark,
+        itemId,
+      ]);
 
     }
   };
@@ -133,7 +182,7 @@ export default function ListHobby() {
   return (
     <ScrollView>
 
-      {/* Horizontal Hobby */}
+      {/* Horizontal */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -162,7 +211,7 @@ export default function ListHobby() {
 
       </ScrollView>
 
-      {/* Vertical Hobby */}
+      {/* Vertical */}
       <View style={styles.verticalContainer}>
 
         {verticalData.map((item) => (
