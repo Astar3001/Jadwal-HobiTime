@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useRef,
+} from 'react';
+
 import {
   StyleSheet,
   Text,
@@ -6,34 +10,64 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  Animated,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell } from 'lucide-react-native';
-import { colors, fontType } from '../../assets/theme';
-import { useFonts } from 'expo-font';
-import ListHobby from '../components/ListHobby';
-import { CategoryList } from '../data/categories';
 
-const ItemCategory = ({ item, onPress, color }) => {
+import { SafeAreaView }
+from 'react-native-safe-area-context';
+
+import { Bell }
+from 'lucide-react-native';
+
+import {
+  colors,
+  fontType,
+} from '../../assets/theme';
+
+import { useFonts }
+from 'expo-font';
+
+import ListHobby
+from '../components/ListHobby';
+
+import {
+  CategoryList,
+} from '../data/categories';
+
+const ItemCategory = ({
+  item,
+  onPress,
+  color,
+}) => {
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={onPress}
+    >
+
       <View style={category.item}>
+
         <Text
           style={{
             ...category.title,
             color,
           }}
         >
+
           {item.categoryName}
+
         </Text>
+
       </View>
+
     </TouchableOpacity>
   );
 };
 
 const FlatListCategory = () => {
 
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] =
+    useState(1);
 
   const renderItem = ({ item }) => {
 
@@ -46,7 +80,9 @@ const FlatListCategory = () => {
       <ItemCategory
         item={item}
         color={color}
-        onPress={() => setSelected(item.id)}
+        onPress={() =>
+          setSelected(item.id)
+        }
       />
     );
   };
@@ -54,7 +90,9 @@ const FlatListCategory = () => {
   return (
     <FlatList
       data={CategoryList}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) =>
+        item.id.toString()
+      }
       renderItem={renderItem}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -70,7 +108,28 @@ const FlatListCategory = () => {
 
 export default function Home() {
 
-  const [loaded] = useFonts(fontType);
+  const [loaded] =
+    useFonts(fontType);
+
+  const scrollY =
+    useRef(
+      new Animated.Value(0)
+    ).current;
+
+  const diffClampY =
+    Animated.diffClamp(
+      scrollY,
+      0,
+      70
+    );
+
+  const headerY =
+    diffClampY.interpolate({
+
+      inputRange: [0, 70],
+
+      outputRange: [0, -70],
+    });
 
   if (!loaded) {
     return null;
@@ -85,7 +144,19 @@ export default function Home() {
       />
 
       {/* Header */}
-      <View style={styles.header}>
+      <Animated.View
+
+        style={[
+          styles.header,
+          {
+            transform: [
+              {
+                translateY: headerY,
+              },
+            ],
+          },
+        ]}
+      >
 
         <Text style={styles.title}>
           HobiTime.
@@ -96,15 +167,59 @@ export default function Home() {
           size={24}
         />
 
-      </View>
+      </Animated.View>
 
       {/* Category */}
-      <View style={styles.listCategory}>
-        <FlatListCategory />
-      </View>
+      <Animated.View
 
-      {/* List Hobby */}
-      <ListHobby />
+        style={[
+          styles.categoryWrapper,
+          {
+            transform: [
+              {
+                translateY: headerY,
+              },
+            ],
+          },
+        ]}
+      >
+
+        <FlatListCategory />
+
+      </Animated.View>
+
+      {/* Content */}
+      <Animated.ScrollView
+
+        showsVerticalScrollIndicator={false}
+
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+
+          {
+            useNativeDriver: true,
+          }
+        )}
+
+        scrollEventThrottle={16}
+
+        contentContainerStyle={{
+          paddingTop: 120,
+          paddingBottom: 20,
+        }}
+      >
+
+        <ListHobby />
+
+      </Animated.ScrollView>
 
     </SafeAreaView>
   );
@@ -124,6 +239,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 60,
     paddingTop: 10,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
+    zIndex: 1000,
+    backgroundColor: colors.white(),
   },
 
   title: {
@@ -132,7 +253,13 @@ const styles = StyleSheet.create({
     color: colors.black(),
   },
 
-  listCategory: {
+  categoryWrapper: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    zIndex: 999,
+    backgroundColor: colors.white(),
     paddingVertical: 10,
   },
 

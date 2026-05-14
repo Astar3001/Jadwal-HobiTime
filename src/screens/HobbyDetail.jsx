@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useRef,
+} from 'react';
 
 import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView }
+from 'react-native-safe-area-context';
 
 import {
   ArrowLeft,
@@ -17,27 +21,65 @@ import {
   Share2,
 } from 'lucide-react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import {
+  useNavigation,
+} from '@react-navigation/native';
 
-import { HobbyList } from '../data/hobbies';
+import { HobbyList }
+from '../data/hobbies';
 
-import { Image } from 'expo-image';
+import { Image }
+from 'expo-image';
 
-import { colors } from '../../assets/theme';
+import { colors }
+from '../../assets/theme';
 
 const HobbyDetail = ({ route }) => {
 
-  const { hobbyId } = route.params;
+  const { hobbyId } =
+    route.params;
 
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation();
 
-  const selectedHobby = HobbyList.find(
-    (item) => item.id === hobbyId
-  );
+  const selectedHobby =
+    HobbyList.find(
+      (item) => item.id === hobbyId
+    );
 
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] =
+    useState(false);
 
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] =
+    useState(false);
+
+  const scrollY =
+    useRef(
+      new Animated.Value(0)
+    ).current;
+
+  const diffClampY =
+    Animated.diffClamp(
+      scrollY,
+      0,
+      52
+    );
+
+  const headerY =
+    diffClampY.interpolate({
+
+      inputRange: [0, 52],
+
+      outputRange: [0, -52],
+    });
+
+  const bottomBarY =
+    diffClampY.interpolate({
+
+      inputRange: [0, 52],
+
+      outputRange: [0, 52],
+    });
 
   if (!selectedHobby) return null;
 
@@ -45,15 +87,31 @@ const HobbyDetail = ({ route }) => {
     <SafeAreaView style={styles.container}>
 
       {/* Header */}
-      <View style={styles.header}>
+      <Animated.View
+
+        style={[
+          styles.header,
+          {
+            transform: [
+              {
+                translateY: headerY,
+              },
+            ],
+          },
+        ]}
+      >
 
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() =>
+            navigation.goBack()
+          }
         >
+
           <ArrowLeft
             color={colors.black()}
             size={24}
           />
+
         </TouchableOpacity>
 
         <Share2
@@ -61,16 +119,35 @@ const HobbyDetail = ({ route }) => {
           size={22}
         />
 
-      </View>
+      </Animated.View>
 
-      <ScrollView
+      {/* Content */}
+      <Animated.ScrollView
+
         showsVerticalScrollIndicator={false}
+
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+
+          {
+            useNativeDriver: true,
+          }
+        )}
+
         contentContainerStyle={{
+          paddingTop: 62,
           paddingBottom: 100,
         }}
       >
 
-        {/* Image */}
         <Image
           style={styles.image}
           source={{
@@ -80,7 +157,6 @@ const HobbyDetail = ({ route }) => {
           transition={300}
         />
 
-        {/* Content */}
         <View style={styles.content}>
 
           <Text style={styles.category}>
@@ -92,68 +168,93 @@ const HobbyDetail = ({ route }) => {
           </Text>
 
           <Text style={styles.description}>
-            Hobby ini dilakukan untuk meningkatkan
-            produktivitas dan mengisi waktu luang
-            dengan kegiatan yang bermanfaat serta
-            menyenangkan untuk dilakukan setiap hari.
+            {selectedHobby.description}
           </Text>
 
           <View style={styles.infoBox}>
 
             <Text style={styles.infoText}>
-              Durasi : {selectedHobby.duration}
+              Durasi :
+              {' '}
+              {selectedHobby.duration}
             </Text>
 
             <Text style={styles.infoText}>
-              Jadwal : {selectedHobby.createdAt}
+              Jadwal :
+              {' '}
+              {selectedHobby.createdAt}
             </Text>
 
           </View>
 
         </View>
 
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Bottom Bar */}
-      <View style={styles.bottomBar}>
+      <Animated.View
+
+        style={[
+          styles.bottomBar,
+          {
+            transform: [
+              {
+                translateY: bottomBarY,
+              },
+            ],
+          },
+        ]}
+      >
 
         <TouchableOpacity
-          onPress={() => setLiked(!liked)}
+          onPress={() =>
+            setLiked(!liked)
+          }
         >
+
           <Heart
             color={
               liked
                 ? colors.primary()
                 : colors.grey()
             }
+
             fill={
               liked
                 ? colors.primary()
                 : 'transparent'
             }
+
             size={24}
           />
+
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setSaved(!saved)}
+          onPress={() =>
+            setSaved(!saved)
+          }
         >
+
           <Bookmark
             color={
               saved
                 ? colors.primary()
                 : colors.grey()
             }
+
             fill={
               saved
                 ? colors.primary()
                 : 'transparent'
             }
+
             size={24}
           />
+
         </TouchableOpacity>
 
-      </View>
+      </Animated.View>
 
     </SafeAreaView>
   );
@@ -173,7 +274,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 60,
+    height: 52,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    backgroundColor: colors.white(),
   },
 
   image: {
@@ -200,7 +307,8 @@ const styles = StyleSheet.create({
 
   description: {
     color: colors.grey(),
-    lineHeight: 24,
+    lineHeight: 28,
+    textAlign: 'justify',
   },
 
   infoBox: {

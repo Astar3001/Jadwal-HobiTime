@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   FlatList,
+  Animated,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView }
+from 'react-native-safe-area-context';
 
-import { Search } from 'lucide-react-native';
+import { Search }
+from 'lucide-react-native';
 
-import { colors } from '../../assets/theme';
+import { colors }
+from '../../assets/theme';
 
-import { HobbyList } from '../data/hobbies';
+import { HobbyList }
+from '../data/hobbies';
 
-import ItemSmall from '../components/ItemSmall';
+import ItemSmall
+from '../components/ItemSmall';
 
 const data = [
   { id: 1, label: 'Gaming' },
@@ -45,7 +50,9 @@ const FlatListRecent = () => {
   return (
     <FlatList
       data={data}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) =>
+        item.id.toString()
+      }
       renderItem={renderItem}
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -61,6 +68,28 @@ const FlatListRecent = () => {
 };
 
 export default function Discover() {
+
+  const scrollY =
+    useRef(
+      new Animated.Value(0)
+    ).current;
+
+  const diffClampY =
+    Animated.diffClamp(
+      scrollY,
+      0,
+      142
+    );
+
+  const recentY =
+    diffClampY.interpolate({
+
+      inputRange: [0, 142],
+
+      outputRange: [0, -142],
+
+      extrapolate: 'clamp',
+    });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,7 +113,19 @@ export default function Discover() {
       </View>
 
       {/* Recent */}
-      <View>
+      <Animated.View
+
+        style={[
+          recent.container,
+          {
+            transform: [
+              {
+                translateY: recentY,
+              },
+            ],
+          },
+        ]}
+      >
 
         <Text style={recent.text}>
           Recent Hobby
@@ -92,11 +133,33 @@ export default function Discover() {
 
         <FlatListRecent />
 
-      </View>
+      </Animated.View>
 
-      {/* Hobby List */}
-      <ScrollView
+      {/* List */}
+      <Animated.ScrollView
+
         showsVerticalScrollIndicator={false}
+
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY,
+                },
+              },
+            },
+          ],
+
+          {
+            useNativeDriver: true,
+          }
+        )}
+
+        contentContainerStyle={{
+          paddingTop: 142,
+          paddingBottom: 20,
+        }}
       >
 
         <View style={styles.listCard}>
@@ -110,7 +173,7 @@ export default function Discover() {
 
         </View>
 
-      </ScrollView>
+      </Animated.ScrollView>
 
     </SafeAreaView>
   );
@@ -127,8 +190,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     flexDirection: 'row',
     alignItems: 'center',
-    height: 60,
-    paddingTop: 10,
+    height: 52,
+    paddingTop: 8,
+    paddingBottom: 4,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1000,
+    right: 0,
+    left: 0,
+    backgroundColor: colors.white(),
   },
 
   searchBar: {
@@ -148,13 +218,23 @@ const styles = StyleSheet.create({
   },
 
   listCard: {
-    paddingBottom: 20,
     gap: 10,
+    paddingBottom: 20,
   },
 
 });
 
 const recent = StyleSheet.create({
+
+  container: {
+    position: 'absolute',
+    backgroundColor: colors.white(),
+    zIndex: 999,
+    top: 52,
+    left: 0,
+    right: 0,
+    elevation: 1000,
+  },
 
   button: {
     paddingHorizontal: 20,

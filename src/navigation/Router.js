@@ -5,8 +5,9 @@ import {
   TransitionPresets,
 } from '@react-navigation/stack';
 
-import { createBottomTabNavigator }
-from '@react-navigation/bottom-tabs';
+import {
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 
 import {
   House,
@@ -25,18 +26,24 @@ import Profile from '../screens/Profile';
 
 import HobbyDetail from '../screens/HobbyDetail';
 
-import { colors } from '../../assets/theme';
+import { colors }
+from '../../assets/theme';
 
-const Tab = createBottomTabNavigator();
+const Tab =
+  createBottomTabNavigator();
 
-const Stack = createStackNavigator();
+const Stack =
+  createStackNavigator();
 
 function MainApp() {
 
   return (
+
     <Tab.Navigator
 
       screenOptions={{
+
+        headerShown: false,
 
         tabBarHideOnKeyboard: true,
 
@@ -47,9 +54,14 @@ function MainApp() {
           colors.grey(),
 
         tabBarStyle: {
+          position: 'absolute',
           height: 65,
           paddingBottom: 10,
           paddingTop: 8,
+          borderTopWidth: 0,
+          elevation: 10,
+          backgroundColor:
+            colors.white(),
         },
 
         tabBarLabelStyle: {
@@ -65,8 +77,6 @@ function MainApp() {
         name="Home"
         component={Home}
         options={{
-          headerShown: false,
-
           tabBarIcon: ({ color }) => (
             <House
               color={color}
@@ -81,8 +91,6 @@ function MainApp() {
         name="Discover"
         component={Discover}
         options={{
-          headerShown: false,
-
           tabBarIcon: ({ color }) => (
             <Compass
               color={color}
@@ -97,8 +105,6 @@ function MainApp() {
         name="Bookmark"
         component={BookmarkScreen}
         options={{
-          headerShown: false,
-
           tabBarIcon: ({ color }) => (
             <Bookmark
               color={color}
@@ -113,8 +119,6 @@ function MainApp() {
         name="Profile"
         component={Profile}
         options={{
-          headerShown: false,
-
           tabBarIcon: ({ color }) => (
             <User
               color={color}
@@ -131,9 +135,10 @@ function MainApp() {
 export default function Router() {
 
   return (
+
     <Stack.Navigator>
 
-      {/* Main */}
+      {/* Main App */}
       <Stack.Screen
         name="MainApp"
         component={MainApp}
@@ -142,7 +147,7 @@ export default function Router() {
         }}
       />
 
-      {/* Detail */}
+      {/* Hobby Detail */}
       <Stack.Screen
         name="HobbyDetail"
         component={HobbyDetail}
@@ -153,7 +158,8 @@ export default function Router() {
 
           gestureEnabled: true,
 
-          gestureDirection: 'horizontal',
+          gestureDirection:
+            'horizontal',
 
           ...TransitionPresets
             .SlideFromRightIOS,
