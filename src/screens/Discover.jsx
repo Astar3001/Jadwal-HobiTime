@@ -1,4 +1,7 @@
-import React, { useRef } from 'react';
+import React, {
+  useRef,
+  useState,
+} from 'react';
 
 import {
   StyleSheet,
@@ -7,6 +10,7 @@ import {
   FlatList,
   Animated,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 
 import { SafeAreaView }
@@ -17,13 +21,13 @@ from 'lucide-react-native';
 
 import {
   useNavigation,
+  useFocusEffect,
 } from '@react-navigation/native';
+
+import axios from 'axios';
 
 import { colors }
 from '../../assets/theme';
-
-import { HobbyList }
-from '../data/hobbies';
 
 import ItemSmall
 from '../components/ItemSmall';
@@ -76,6 +80,43 @@ export default function Discover() {
 
   const navigation =
     useNavigation();
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [hobbyData,
+    setHobbyData] =
+    useState([]);
+
+  const getDataHobby =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+            'https://6a062387c83ba8ad9b3d43f2.mockapi.io/hobitime/hobbies'
+          );
+
+        setHobbyData(
+          response.data
+        );
+
+        setLoading(false);
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      getDataHobby();
+
+    }, [])
+  );
 
   const scrollY =
     useRef(
@@ -183,12 +224,24 @@ export default function Discover() {
 
         <View style={styles.listCard}>
 
-          {HobbyList.map((item) => (
-            <ItemSmall
-              item={item}
-              key={item.id}
+          {loading ? (
+
+            <ActivityIndicator
+              size="large"
+              color={colors.primary()}
             />
-          ))}
+
+          ) : (
+
+            hobbyData.map((item) => (
+
+              <ItemSmall
+                item={item}
+                key={item.id}
+              />
+
+            ))
+          )}
 
         </View>
 

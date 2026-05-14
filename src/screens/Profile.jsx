@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {
+  useState,
+} from 'react';
 
 import {
   ScrollView,
@@ -6,142 +8,218 @@ import {
   Text,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Settings,
+  Plus,
+} from 'lucide-react-native';
 
-import { Settings } from 'lucide-react-native';
+import {
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
 
-import { Image } from 'expo-image';
+import { Image }
+from 'expo-image';
 
-import { colors } from '../../assets/theme';
+import axios from 'axios';
 
-import { ProfileData } from '../data/profiledata';
+import ItemSmall
+from '../components/ItemSmall';
 
-import { HobbyList } from '../data/hobbies';
-
-import ItemSmall from '../components/ItemSmall';
-
-const formatNumber = (number) => {
-
-  if (!number) return '0';
-
-  if (number >= 1000) {
-    return (
-      (number / 1000).toFixed(1)
-        .replace('.0', '') + 'K'
-    );
-  }
-
-  return number.toString();
-};
+import {
+  colors,
+} from '../../assets/theme';
 
 export default function Profile() {
 
+  const navigation =
+    useNavigation();
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [hobbyData,
+    setHobbyData] =
+    useState([]);
+
+  const getDataHobby =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+            'https://6a062387c83ba8ad9b3d43f2.mockapi.io/hobitime/hobbies'
+          );
+
+        setHobbyData(
+          response.data
+        );
+
+        setLoading(false);
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      getDataHobby();
+
+    }, [])
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+
+    <View style={styles.container}>
 
       {/* Header */}
       <View style={styles.header}>
 
-        <Settings
-          color={colors.black()}
-          size={24}
-        />
+        <TouchableOpacity>
+
+          <Settings
+            color={colors.black()}
+            size={24}
+          />
+
+        </TouchableOpacity>
 
       </View>
 
+      {/* Content */}
       <ScrollView
-        showsVerticalScrollIndicator={false}
+
+        showsVerticalScrollIndicator={
+          false
+        }
+
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          paddingBottom: 140,
+          gap: 20,
+        }}
       >
 
         {/* Profile */}
-        <View style={styles.profileHeader}>
+        <View style={styles.profile}>
 
           <Image
-            style={profile.pic}
+
+            style={styles.profileImage}
+
             source={{
-              uri: ProfileData.profilePict,
+              uri:
+                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop',
             }}
+
             contentFit="cover"
-            transition={200}
+
           />
 
-          <View style={styles.profileInfo}>
+          <Text style={styles.name}>
+            Lucky Rivaldo
+          </Text>
 
-            <Text style={profile.name}>
-              {ProfileData.name}
-            </Text>
-
-            <Text style={profile.info}>
-              Member since {ProfileData.createdAt}
-            </Text>
-
-          </View>
+          <Text style={styles.info}>
+            Hobby Enthusiast
+          </Text>
 
           {/* Stats */}
-          <View style={profile.statsContainer}>
+          <View style={styles.statsContainer}>
 
-            <View style={profile.statItem}>
-              <Text style={profile.sum}>
-                {ProfileData.hobbyPosted}
+            <View style={styles.statItem}>
+
+              <Text style={styles.statNumber}>
+                {hobbyData.length}
               </Text>
 
-              <Text style={profile.tag}>
+              <Text style={styles.statLabel}>
                 Hobby
               </Text>
+
             </View>
 
-            <View style={profile.statItem}>
-              <Text style={profile.sum}>
-                {formatNumber(ProfileData.following)}
+            <View style={styles.statItem}>
+
+              <Text style={styles.statNumber}>
+                120
               </Text>
 
-              <Text style={profile.tag}>
+              <Text style={styles.statLabel}>
                 Following
               </Text>
+
             </View>
 
-            <View style={profile.statItem}>
-              <Text style={profile.sum}>
-                {formatNumber(ProfileData.follower)}
+            <View style={styles.statItem}>
+
+              <Text style={styles.statNumber}>
+                2.5K
               </Text>
 
-              <Text style={profile.tag}>
-                Follower
+              <Text style={styles.statLabel}>
+                Followers
               </Text>
+
             </View>
 
           </View>
-
-          {/* Button */}
-          <TouchableOpacity
-            style={profile.buttonEdit}
-          >
-
-            <Text style={profile.buttonText}>
-              Edit Profile
-            </Text>
-
-          </TouchableOpacity>
 
         </View>
 
         {/* Hobby List */}
-        <View style={styles.listCard}>
+        <View style={styles.list}>
 
-          {HobbyList.map((item) => (
-            <ItemSmall
-              item={item}
-              key={item.id}
+          {loading ? (
+
+            <ActivityIndicator
+              size="large"
+              color={colors.primary()}
             />
-          ))}
+
+          ) : (
+
+            hobbyData.map((item) => (
+
+              <ItemSmall
+                item={item}
+                key={item.id}
+              />
+
+            ))
+          )}
 
         </View>
 
       </ScrollView>
 
-    </SafeAreaView>
+      {/* Floating Button */}
+      <TouchableOpacity
+
+        style={styles.floatingButton}
+
+        onPress={() =>
+          navigation.navigate(
+            'AddHobby'
+          )
+        }
+      >
+
+        <Plus
+          color={colors.white()}
+          size={24}
+        />
+
+      </TouchableOpacity>
+
+    </View>
   );
 }
 
@@ -157,45 +235,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 60,
-    paddingTop: 10,
+    height: 52,
+    marginTop: 16,
   },
 
-  profileHeader: {
+  profile: {
     alignItems: 'center',
-    gap: 15,
-    paddingVertical: 20,
-  },
-
-  profileInfo: {
-    alignItems: 'center',
-    gap: 5,
-  },
-
-  listCard: {
-    paddingVertical: 10,
     gap: 10,
-    paddingBottom: 30,
+    marginTop: 10,
   },
 
-});
-
-const profile = StyleSheet.create({
-
-  pic: {
+  profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
   },
 
   name: {
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: 'Pjs-Bold',
     color: colors.black(),
   },
 
   info: {
-    fontSize: 12,
+    fontSize: 14,
     color: colors.grey(),
   },
 
@@ -207,30 +270,36 @@ const profile = StyleSheet.create({
 
   statItem: {
     alignItems: 'center',
+    gap: 5,
   },
 
-  sum: {
+  statNumber: {
     fontSize: 18,
-    fontFamily: 'Pjs-SemiBold',
+    fontFamily: 'Pjs-Bold',
     color: colors.black(),
   },
 
-  tag: {
+  statLabel: {
     fontSize: 13,
     color: colors.grey(),
   },
 
-  buttonEdit: {
-    backgroundColor: colors.primary(0.1),
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 10,
+  list: {
+    gap: 10,
   },
 
-  buttonText: {
-    fontFamily: 'Pjs-SemiBold',
-    color: colors.primary(),
+  floatingButton: {
+    position: 'absolute',
+    bottom: 90,
+    right: 24,
+    backgroundColor:
+      colors.primary(),
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 10,
   },
 
 });

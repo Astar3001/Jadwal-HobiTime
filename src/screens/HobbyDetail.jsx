@@ -1,6 +1,7 @@
 import React, {
   useState,
   useRef,
+  useEffect,
 } from 'react';
 
 import {
@@ -9,6 +10,8 @@ import {
   View,
   TouchableOpacity,
   Animated,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { SafeAreaView }
@@ -19,20 +22,25 @@ import {
   Heart,
   Bookmark,
   Share2,
+  Trash2,
+  Pencil,
 } from 'lucide-react-native';
 
 import {
   useNavigation,
 } from '@react-navigation/native';
 
-import { HobbyList }
-from '../data/hobbies';
+import axios from 'axios';
 
 import { Image }
 from 'expo-image';
 
 import { colors }
 from '../../assets/theme';
+
+import {
+  formatDate,
+} from '../utils/formatDate';
 
 const HobbyDetail = ({ route }) => {
 
@@ -42,16 +50,89 @@ const HobbyDetail = ({ route }) => {
   const navigation =
     useNavigation();
 
-  const selectedHobby =
-    HobbyList.find(
-      (item) => item.id === hobbyId
-    );
+  const [selectedHobby,
+    setSelectedHobby] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
 
   const [liked, setLiked] =
     useState(false);
 
   const [saved, setSaved] =
     useState(false);
+
+  useEffect(() => {
+
+    getDetailHobby();
+
+  }, []);
+
+  const getDetailHobby =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+            `https://6a062387c83ba8ad9b3d43f2.mockapi.io/hobitime/hobbies/${hobbyId}`
+          );
+
+        setSelectedHobby(
+          response.data
+        );
+
+        setLoading(false);
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  const deleteHobby =
+    async () => {
+
+      try {
+
+        await axios.delete(
+          `https://6a062387c83ba8ad9b3d43f2.mockapi.io/hobitime/hobbies/${hobbyId}`
+        );
+
+        Alert.alert(
+          'Success',
+          'Hobby berhasil dihapus'
+        );
+
+        navigation.goBack();
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  const handleDelete =
+    () => {
+
+      Alert.alert(
+        'Delete Hobby',
+        'Yakin ingin menghapus hobby ini?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: deleteHobby,
+          },
+        ]
+      );
+    };
 
   const scrollY =
     useRef(
@@ -81,7 +162,29 @@ const HobbyDetail = ({ route }) => {
       outputRange: [0, 52],
     });
 
-  if (!selectedHobby) return null;
+  if (loading) {
+
+    return (
+
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+
+        <ActivityIndicator
+          size="large"
+          color={colors.primary()}
+        />
+
+      </View>
+    );
+  }
+
+  if (!selectedHobby)
+    return null;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,10 +217,47 @@ const HobbyDetail = ({ route }) => {
 
         </TouchableOpacity>
 
-        <Share2
-          color={colors.black()}
-          size={22}
-        />
+        <View style={styles.headerRight}>
+
+          {/* Edit */}
+          <TouchableOpacity
+
+            onPress={() =>
+              navigation.navigate(
+                'EditHobby',
+                {
+                  hobbyId,
+                }
+              )
+            }
+          >
+
+            <Pencil
+              color={colors.primary()}
+              size={22}
+            />
+
+          </TouchableOpacity>
+
+          {/* Delete */}
+          <TouchableOpacity
+            onPress={handleDelete}
+          >
+
+            <Trash2
+              color="red"
+              size={22}
+            />
+
+          </TouchableOpacity>
+
+          {/* Share */}
+          <Share2
+            color={colors.black()}
+            size={22}
+          />
+
+        </View>
 
       </Animated.View>
 
@@ -174,15 +314,17 @@ const HobbyDetail = ({ route }) => {
           <View style={styles.infoBox}>
 
             <Text style={styles.infoText}>
-              Durasi :
+              Duration :
               {' '}
               {selectedHobby.duration}
             </Text>
 
             <Text style={styles.infoText}>
-              Jadwal :
+              Created :
               {' '}
-              {selectedHobby.createdAt}
+              {formatDate(
+                selectedHobby.createdAt
+              )}
             </Text>
 
           </View>
@@ -281,6 +423,12 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1000,
     backgroundColor: colors.white(),
+  },
+
+  headerRight: {
+    flexDirection: 'row',
+    gap: 20,
+    alignItems: 'center',
   },
 
   image: {

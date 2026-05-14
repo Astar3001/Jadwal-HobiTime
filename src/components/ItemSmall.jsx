@@ -7,17 +7,24 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { Image } from 'expo-image';
+import { Image }
+from 'expo-image';
 
 import {
   Clock3,
+  Bookmark,
 } from 'lucide-react-native';
-
-import { colors } from '../../assets/theme';
 
 import {
   useNavigation,
 } from '@react-navigation/native';
+
+import { colors }
+from '../../assets/theme';
+
+import {
+  formatDate,
+} from '../utils/formatDate';
 
 const ItemSmall = ({ item }) => {
 
@@ -27,7 +34,6 @@ const ItemSmall = ({ item }) => {
   return (
 
     <TouchableOpacity
-      style={styles.cardItem}
 
       onPress={() =>
         navigation.navigate(
@@ -37,26 +43,37 @@ const ItemSmall = ({ item }) => {
           }
         )
       }
+
+      style={styles.cardItem}
     >
 
       <Image
+
         style={styles.cardImage}
+
         source={{
           uri: item.image,
         }}
+
         contentFit="cover"
-        transition={200}
+
+        transition={300}
+
       />
 
       <View style={styles.cardContent}>
 
-        <Text style={styles.cardCategory}>
-          {item.category}
-        </Text>
+        <View style={{ gap: 5 }}>
 
-        <Text style={styles.cardTitle}>
-          {item.title}
-        </Text>
+          <Text style={styles.cardCategory}>
+            {item.category}
+          </Text>
+
+          <Text style={styles.cardTitle}>
+            {item.title}
+          </Text>
+
+        </View>
 
         <View style={styles.cardInfo}>
 
@@ -66,12 +83,19 @@ const ItemSmall = ({ item }) => {
           />
 
           <Text style={styles.cardText}>
-            {item.duration}
+            {formatDate(
+              item.createdAt
+            )}
           </Text>
 
         </View>
 
       </View>
+
+      <Bookmark
+        color={colors.grey()}
+        size={18}
+      />
 
     </TouchableOpacity>
   );
@@ -82,22 +106,34 @@ export default ItemSmall;
 const styles = StyleSheet.create({
 
   cardItem: {
-    backgroundColor: colors.primary(0.05),
+    backgroundColor:
+      colors.primary(0.05),
+
     flexDirection: 'row',
+
     borderRadius: 16,
+
     marginHorizontal: 24,
-    overflow: 'hidden',
+
+    marginVertical: 5,
+
+    padding: 10,
+
+    alignItems: 'center',
+
+    gap: 12,
   },
 
   cardImage: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
+    borderRadius: 14,
   },
 
   cardContent: {
     flex: 1,
-    padding: 14,
     justifyContent: 'space-between',
+    gap: 10,
   },
 
   cardCategory: {
@@ -108,7 +144,7 @@ const styles = StyleSheet.create({
 
   cardTitle: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontFamily: 'Pjs-Bold',
     color: colors.black(),
   },
 
@@ -119,7 +155,7 @@ const styles = StyleSheet.create({
   },
 
   cardText: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.grey(),
   },
 

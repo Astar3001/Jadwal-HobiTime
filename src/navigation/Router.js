@@ -28,8 +28,13 @@ import HobbyDetail from '../screens/HobbyDetail';
 
 import SearchPage from '../screens/Search';
 
-import { colors }
-from '../../assets/theme';
+import AddHobby from '../screens/AddHobby';
+
+import EditHobby from '../screens/EditHobby';
+
+import {
+  colors,
+} from '../../assets/theme';
 
 const Tab =
   createBottomTabNavigator();
@@ -155,14 +160,10 @@ export default function Router() {
         component={HobbyDetail}
         options={{
           headerShown: false,
-
           animationEnabled: true,
-
           gestureEnabled: true,
-
           gestureDirection:
             'horizontal',
-
           ...TransitionPresets
             .SlideFromRightIOS,
         }}
@@ -175,10 +176,43 @@ export default function Router() {
         options={{
           headerShown: false,
           animationEnabled: true,
-          animationTypeForReplace: 'pop',
+          animationTypeForReplace:
+            'pop',
           gestureEnabled: true,
-          gestureDirection: 'horizontal',
-          ...TransitionPresets.SlideFromRightIOS,
+          gestureDirection:
+            'horizontal',
+          ...TransitionPresets
+            .SlideFromRightIOS,
+        }}
+      />
+
+      {/* Add Hobby */}
+      <Stack.Screen
+        name="AddHobby"
+        component={AddHobby}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          gestureEnabled: true,
+          gestureDirection:
+            'horizontal',
+          ...TransitionPresets
+            .SlideFromRightIOS,
+        }}
+      />
+
+      {/* Edit Hobby */}
+      <Stack.Screen
+        name="EditHobby"
+        component={EditHobby}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          gestureEnabled: true,
+          gestureDirection:
+            'horizontal',
+          ...TransitionPresets
+            .SlideFromRightIOS,
         }}
       />
 
