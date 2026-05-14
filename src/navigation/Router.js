@@ -26,6 +26,8 @@ import Profile from '../screens/Profile';
 
 import HobbyDetail from '../screens/HobbyDetail';
 
+import SearchPage from '../screens/Search';
+
 import { colors }
 from '../../assets/theme';
 
@@ -163,6 +165,20 @@ export default function Router() {
 
           ...TransitionPresets
             .SlideFromRightIOS,
+        }}
+      />
+
+      {/* Search Page */}
+      <Stack.Screen
+        name="SearchPage"
+        component={SearchPage}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
         }}
       />
 

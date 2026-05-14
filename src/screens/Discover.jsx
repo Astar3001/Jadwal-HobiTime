@@ -6,6 +6,7 @@ import {
   View,
   FlatList,
   Animated,
+  Pressable,
 } from 'react-native';
 
 import { SafeAreaView }
@@ -13,6 +14,10 @@ from 'react-native-safe-area-context';
 
 import { Search }
 from 'lucide-react-native';
+
+import {
+  useNavigation,
+} from '@react-navigation/native';
 
 import { colors }
 from '../../assets/theme';
@@ -69,6 +74,9 @@ const FlatListRecent = () => {
 
 export default function Discover() {
 
+  const navigation =
+    useNavigation();
+
   const scrollY =
     useRef(
       new Animated.Value(0)
@@ -97,18 +105,29 @@ export default function Discover() {
       {/* Header */}
       <View style={styles.header}>
 
-        <View style={styles.searchBar}>
+        <Pressable
+          onPress={() =>
+            navigation.navigate(
+              'SearchPage'
+            )
+          }
+          style={{ flex: 1 }}
+        >
 
-          <Search
-            size={18}
-            color={colors.grey(0.5)}
-          />
+          <View style={styles.searchBar}>
 
-          <Text style={styles.placeholder}>
-            Cari hobby...
-          </Text>
+            <Search
+              size={18}
+              color={colors.grey(0.5)}
+            />
 
-        </View>
+            <Text style={styles.placeholder}>
+              Cari hobby...
+            </Text>
+
+          </View>
+
+        </Pressable>
 
       </View>
 
