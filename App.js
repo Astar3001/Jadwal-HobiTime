@@ -1,5 +1,28 @@
-import Profile from './src/screens/Profile';
+import React from 'react';
+
+import { NavigationContainer }
+from '@react-navigation/native';
+
+import Router from './src/navigation/Router';
+
+import { fontType }
+from './assets/theme';
+
+import { useFonts }
+from 'expo-font';
 
 export default function App() {
-  return <Profile />;
+
+  const [loaded] =
+    useFonts(fontType);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <NavigationContainer>
+      <Router />
+    </NavigationContainer>
+  );
 }

@@ -4,18 +4,40 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
 
 import { Image } from 'expo-image';
 
-import { Clock3 } from 'lucide-react-native';
+import {
+  Clock3,
+} from 'lucide-react-native';
 
 import { colors } from '../../assets/theme';
 
+import {
+  useNavigation,
+} from '@react-navigation/native';
+
 const ItemSmall = ({ item }) => {
 
+  const navigation =
+    useNavigation();
+
   return (
-    <View style={styles.cardItem}>
+
+    <TouchableOpacity
+      style={styles.cardItem}
+
+      onPress={() =>
+        navigation.navigate(
+          'HobbyDetail',
+          {
+            hobbyId: item.id,
+          }
+        )
+      }
+    >
 
       <Image
         style={styles.cardImage}
@@ -51,7 +73,7 @@ const ItemSmall = ({ item }) => {
 
       </View>
 
-    </View>
+    </TouchableOpacity>
   );
 };
 
